@@ -13,7 +13,11 @@ import { ProtectedRoute } from "./components/ProtectedRoute.tsx";
 import { AuthRoute } from "./components/AuthRoute.tsx";
 
 const App = () => (
-  <SWRConfig value={{ fetcher }}>
+  <SWRConfig value={{ 
+    fetcher,
+    revalidateOnFocus: false,
+    revalidateIfStale: false
+  }}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
