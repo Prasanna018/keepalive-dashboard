@@ -3,7 +3,7 @@ import { useUser } from "@/hooks/useUser";
 import { Loader2 } from "lucide-react";
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, isLoading, isError, error } = useUser();
+  const { user, isLoading, isError } = useUser();
   const location = useLocation();
 
   if (isLoading) {
@@ -14,13 +14,10 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  // 1. If it's a maintenance/suspension error, stay here and let AppLayout show the screen.
-  if (isError && error?.detail === "BACKEND_SUSPENDED") {
-    return <>{children}</>;
-  }
-
-  // 2. Otherwise, if there's an error or no user, redirect to login.
   if (isError || !user) {
+    // Redirect them to the auth page, but save the current location they were
+    // trying to go to when they were redirected. This allows us to send them
+    // along to that page after they login, which is a nicer user experience.
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 

@@ -20,19 +20,8 @@ export const fetcher = async (url: string) => {
   }
 
   if (!res.ok) {
-    const text = await res.text();
-    let detail = "Unknown error";
-    try {
-      const json = JSON.parse(text);
-      detail = json.detail || detail;
-    } catch {
-      if (res.status === 503 || text.toLowerCase().includes("suspended")) {
-        detail = "BACKEND_SUSPENDED";
-      } else {
-        detail = text || detail;
-      }
-    }
-    throw { detail, status: res.status };
+    const error = await res.json().catch(() => ({ detail: "Unknown error" }));
+    throw error;
   }
 
   return res.json();
@@ -60,19 +49,8 @@ export const apiFetch = async (
   }
 
   if (!res.ok) {
-    const text = await res.text();
-    let detail = "Unknown error";
-    try {
-      const json = JSON.parse(text);
-      detail = json.detail || detail;
-    } catch {
-      if (res.status === 503 || text.toLowerCase().includes("suspended")) {
-        detail = "BACKEND_SUSPENDED";
-      } else {
-        detail = text || detail;
-      }
-    }
-    throw { detail, status: res.status };
+    const error = await res.json().catch(() => ({ detail: "Unknown error" }));
+    throw error;
   }
 
   // DELETE may return no content

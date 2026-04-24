@@ -18,6 +18,5 @@ export function useUser() {
     user: data,
     isLoading,
     isError: !!error,
-    error: error,
   };
 }
