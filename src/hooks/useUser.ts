@@ -1,4 +1,5 @@
 import useSWR from "swr";
+import { getCookie } from "@/lib/api";
 
 export interface User {
   id: string;
@@ -8,7 +9,7 @@ export interface User {
 }
 
 export function useUser() {
-  const token = localStorage.getItem("keepalive_token");
+  const token = getCookie("keepalive_token");
 
   const { data, error, isLoading } = useSWR<User>(
     token ? "/auth/me" : null

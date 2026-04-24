@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/Logo";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, setCookie } from "@/lib/api";
 
 const Auth = () => {
   const [tab, setTab] = useState<"login" | "register">("login");
@@ -25,7 +25,10 @@ const Auth = () => {
         ? { email, password, full_name: fullName }
         : { email, password };
       const data = await apiFetch(endpoint, "POST", payload);
-      localStorage.setItem("keepalive_token", data.access_token);
+      
+      setCookie("keepalive_token", data.access_token, 7);
+      setCookie("keepalive_refresh_token", data.refresh_token, 7);
+      
       toast.success(tab === "login" ? "Welcome back!" : "Account created — let's go.");
       navigate("/dashboard");
     } catch (err: any) {
