@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/Logo";
-import { ArrowRight, Github, Mail, Loader2 } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/api";
 
@@ -98,20 +98,7 @@ const Auth = () => {
             </Button>
           </form>
 
-          <div className="my-6 flex items-center gap-3">
-            <div className="h-px flex-1 bg-border" />
-            <span className="text-xs uppercase tracking-wider text-muted-foreground">or continue with</span>
-            <div className="h-px flex-1 bg-border" />
-          </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <Button variant="outline" className="h-10 gap-2" onClick={() => navigate("/dashboard")}>
-              <Github className="h-4 w-4" /> GitHub
-            </Button>
-            <Button variant="outline" className="h-10 gap-2" onClick={() => navigate("/dashboard")}>
-              <Mail className="h-4 w-4" /> Google
-            </Button>
-          </div>
         </div>
 
         <p className="text-xs text-muted-foreground">© 2026 KeepAlive. Built for developers.</p>
