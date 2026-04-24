@@ -14,13 +14,13 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  if (isError || !user) {
-    // If the backend is suspended/maintenance, don't redirect to login.
-    // Let the AppLayout handle showing the maintenance screen.
-    if (error?.detail === "BACKEND_SUSPENDED") {
-      return <>{children}</>;
-    }
+  // 1. If it's a maintenance/suspension error, stay here and let AppLayout show the screen.
+  if (isError && error?.detail === "BACKEND_SUSPENDED") {
+    return <>{children}</>;
+  }
 
+  // 2. Otherwise, if there's an error or no user, redirect to login.
+  if (isError || !user) {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 

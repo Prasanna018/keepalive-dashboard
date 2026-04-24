@@ -26,8 +26,11 @@ export const fetcher = async (url: string) => {
       const json = JSON.parse(text);
       detail = json.detail || detail;
     } catch {
-      if (text.includes("suspended")) detail = "BACKEND_SUSPENDED";
-      else detail = text || detail;
+      if (res.status === 503 || text.toLowerCase().includes("suspended")) {
+        detail = "BACKEND_SUSPENDED";
+      } else {
+        detail = text || detail;
+      }
     }
     throw { detail, status: res.status };
   }
@@ -63,8 +66,11 @@ export const apiFetch = async (
       const json = JSON.parse(text);
       detail = json.detail || detail;
     } catch {
-      if (text.includes("suspended")) detail = "BACKEND_SUSPENDED";
-      else detail = text || detail;
+      if (res.status === 503 || text.toLowerCase().includes("suspended")) {
+        detail = "BACKEND_SUSPENDED";
+      } else {
+        detail = text || detail;
+      }
     }
     throw { detail, status: res.status };
   }
