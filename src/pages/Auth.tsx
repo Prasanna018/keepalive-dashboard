@@ -4,19 +4,31 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/Logo";
-import { ArrowRight, Github, Mail } from "lucide-react";
+import { ArrowRight, Github, Mail, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { api } from "@/lib/api";
 
 const Auth = () => {
   const [tab, setTab] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success(tab === "login" ? "Welcome back!" : "Account created — let's go.");
-    navigate("/dashboard");
+    setLoading(true);
+    try {
+      const endpoint = tab === "login" ? "/auth/login" : "/auth/register";
+      const res = await api.post(endpoint, { email, password });
+      localStorage.setItem("keepalive_token", res.data.access_token);
+      toast.success(tab === "login" ? "Welcome back!" : "Account created — let's go.");
+      navigate("/dashboard");
+    } catch (err: any) {
+      toast.error(err.response?.data?.detail || "Authentication failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -66,9 +78,13 @@ const Auth = () => {
               <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required className="h-11 font-mono" />
             </div>
 
-            <Button type="submit" size="lg" className="w-full bg-gradient-primary hover:opacity-90 shadow-glow gap-2 h-11">
-              {tab === "login" ? "Sign in" : "Create account"}
-              <ArrowRight className="h-4 w-4" />
+            <Button type="submit" size="lg" disabled={loading} className="w-full bg-gradient-primary hover:opacity-90 shadow-glow gap-2 h-11">
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : (
+                <>
+                  {tab === "login" ? "Sign in" : "Create account"}
+                  <ArrowRight className="h-4 w-4" />
+                </>
+              )}
             </Button>
           </form>
 
