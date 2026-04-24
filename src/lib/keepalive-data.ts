@@ -21,6 +21,7 @@ export interface LogEntry {
   status_code: number;
   response_time: number;
   error?: string;
+  message?: string;
 }
 
 export const initialServices: Service[] = [

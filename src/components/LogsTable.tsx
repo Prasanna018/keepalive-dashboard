@@ -65,7 +65,7 @@ export const LogsTable = ({ logs, loading }: LogsTableProps) => {
                     <span className={ok ? "text-success" : "text-destructive"}>{l.status_code}</span>
                   </td>
                   <td className="px-5 py-3 font-mono text-xs text-muted-foreground">{l.response_time} ms</td>
-                  <td className="px-5 py-3 font-mono text-xs text-muted-foreground">{l.error ?? "—"}</td>
+                  <td className="px-5 py-3 font-mono text-xs text-muted-foreground truncate max-w-[300px]">{l.error || l.message || "—"}</td>
                 </tr>
               );
             })}
