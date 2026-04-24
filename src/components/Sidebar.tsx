@@ -12,7 +12,7 @@ const items = [
   { to: "/settings", label: "Settings", icon: Settings, disabled: true },
 ];
 
-export const Sidebar = () => {
+export const SidebarContent = () => {
   const { user } = useUser();
 
   const initials = user?.full_name
@@ -20,7 +20,7 @@ export const Sidebar = () => {
     : user?.email?.slice(0, 2).toUpperCase() ?? "??";
 
   return (
-    <aside className="hidden md:flex md:w-60 lg:w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar">
+    <div className="flex flex-col h-full">
       <div className="px-5 h-16 flex items-center border-b border-sidebar-border">
         <Logo />
       </div>
@@ -68,7 +68,14 @@ export const Sidebar = () => {
           </div>
         </div>
       </div>
-    </aside>
+    </div>
   );
 };
 
+export const Sidebar = () => {
+  return (
+    <aside className="hidden md:flex md:w-60 lg:w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar">
+      <SidebarContent />
+    </aside>
+  );
+};

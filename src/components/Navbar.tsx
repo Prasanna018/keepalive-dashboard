@@ -18,6 +18,10 @@ interface NavbarProps {
   subtitle?: string;
 }
 
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { SidebarContent } from "./Sidebar";
+import { Menu } from "lucide-react";
+
 export const Navbar = ({ title, subtitle }: NavbarProps) => {
   const { user } = useUser();
   const navigate = useNavigate();
@@ -34,6 +38,20 @@ export const Navbar = ({ title, subtitle }: NavbarProps) => {
   return (
     <header className="h-16 shrink-0 border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-30">
       <div className="h-full px-4 sm:px-6 flex items-center gap-4">
+        {/* Mobile Menu */}
+        <div className="md:hidden">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-9 w-9">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="p-0 w-72 bg-sidebar border-r-sidebar-border">
+              <SidebarContent />
+            </SheetContent>
+          </Sheet>
+        </div>
+
         <div className="flex-1 min-w-0">
           <h1 className="text-base font-semibold tracking-tight truncate">{title}</h1>
           {subtitle && <p className="text-xs text-muted-foreground truncate">{subtitle}</p>}

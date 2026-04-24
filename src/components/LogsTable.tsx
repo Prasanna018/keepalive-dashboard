@@ -31,7 +31,8 @@ export const LogsTable = ({ logs, loading }: LogsTableProps) => {
 
   return (
     <div className="rounded-xl border border-border bg-card shadow-elegant overflow-hidden">
-      <div className="overflow-x-auto">
+      {/* Desktop table */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/30">
@@ -71,6 +72,43 @@ export const LogsTable = ({ logs, loading }: LogsTableProps) => {
             })}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile view */}
+      <div className="md:hidden divide-y divide-border">
+        {logs.map((l) => {
+          const ok = l.status === "success";
+          return (
+            <div key={l._id} className="p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-[10px] text-muted-foreground">{new Date(l.timestamp).toLocaleString()}</span>
+                {ok ? (
+                  <Badge variant="outline" className="border-success/30 bg-success/10 text-success text-[10px] py-0 h-5 gap-1">
+                    <CheckCircle2 className="h-2.5 w-2.5" /> Success
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="border-destructive/30 bg-destructive/10 text-destructive text-[10px] py-0 h-5 gap-1">
+                    <XCircle className="h-2.5 w-2.5" /> Fail
+                  </Badge>
+                )}
+              </div>
+              <div className="min-w-0">
+                <p className="font-mono text-xs truncate">{l.service_url ?? "—"}</p>
+              </div>
+              <div className="flex items-center justify-between text-[11px] font-mono">
+                <div className="flex gap-3">
+                  <span className={ok ? "text-success" : "text-destructive"}>HTTP {l.status_code}</span>
+                  <span className="text-muted-foreground">{l.response_time}ms</span>
+                </div>
+              </div>
+              {(l.error || l.message) && (
+                <div className="bg-muted/30 rounded p-2 font-mono text-[10px] text-muted-foreground break-all">
+                  {l.error || l.message}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

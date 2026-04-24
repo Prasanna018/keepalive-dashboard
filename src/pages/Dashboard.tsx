@@ -40,7 +40,7 @@ const Dashboard = () => {
       subtitle="Keep your backends warm and responsive."
       actions={
         <>
-          <div className="grid grid-cols-3 gap-3 flex-1 max-w-2xl">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 flex-1 max-w-2xl">
             {stats.map((s) => (
               <div key={s.label} className="rounded-xl border border-border bg-card p-4 shadow-elegant">
                 <div className="flex items-center justify-between mb-1.5">
