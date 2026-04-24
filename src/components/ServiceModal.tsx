@@ -10,8 +10,8 @@ import { Service, Method, deriveServiceName } from "@/lib/keepalive-data";
 interface ServiceModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  initial?: Service | null;
-  onSave: (svc: Service) => void;
+  initial?: any | null;
+  onSave: (svc: any) => void;
 }
 
 export const ServiceModal = ({ open, onOpenChange, initial, onSave }: ServiceModalProps) => {
@@ -25,21 +25,38 @@ export const ServiceModal = ({ open, onOpenChange, initial, onSave }: ServiceMod
       setUrl(initial?.url ?? "");
       setMethod(initial?.method ?? "GET");
       setIntervalMin(String(initial?.interval ?? 5));
-      setHeaders(initial?.headers ?? []);
+      
+      let initHeaders = [];
+      if (initial?.headers) {
+        if (Array.isArray(initial.headers)) {
+          initHeaders = initial.headers;
+        } else {
+          initHeaders = Object.entries(initial.headers).map(([key, value]) => ({ key, value: String(value) }));
+        }
+      }
+      setHeaders(initHeaders);
     }
   }, [open, initial]);
 
   const handleSave = () => {
     if (!url.trim()) return;
-    onSave({
-      id: initial?.id ?? crypto.randomUUID(),
+    
+    const formattedHeaders: Record<string, string> = {};
+    headers.filter((h) => h.key.trim() !== "").forEach((h) => {
+      formattedHeaders[h.key.trim()] = h.value;
+    });
+
+    const payload: any = {
       url: url.trim(),
       method,
       interval: parseInt(interval, 10),
-      status: initial?.status ?? "active",
-      lastPing: initial?.lastPing ?? "Just now",
-      headers: headers.filter((h) => h.key),
-    });
+      is_active: initial?.is_active ?? true,
+      headers: formattedHeaders,
+    };
+    if (initial?._id) {
+      payload._id = initial._id;
+    }
+    onSave(payload);
     onOpenChange(false);
   };
 

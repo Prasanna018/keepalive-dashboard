@@ -1,7 +1,17 @@
-import { Bell, Search } from "lucide-react";
+import { Bell, Search, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/hooks/useUser";
+import { useNavigate } from "react-router-dom";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface NavbarProps {
   title: string;
@@ -9,6 +19,18 @@ interface NavbarProps {
 }
 
 export const Navbar = ({ title, subtitle }: NavbarProps) => {
+  const { user } = useUser();
+  const navigate = useNavigate();
+
+  const initials = user?.full_name
+    ? user.full_name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+    : user?.email?.slice(0, 2).toUpperCase() ?? "??";
+
+  const handleLogout = () => {
+    localStorage.removeItem("keepalive_token");
+    navigate("/auth");
+  };
+
   return (
     <header className="h-16 shrink-0 border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-30">
       <div className="h-full px-4 sm:px-6 flex items-center gap-4">
@@ -30,11 +52,38 @@ export const Navbar = ({ title, subtitle }: NavbarProps) => {
           <span className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-primary" />
         </Button>
 
-        <Avatar className="h-9 w-9 border border-border">
-          <AvatarFallback className="bg-gradient-primary text-primary-foreground text-xs font-semibold">
-            DV
-          </AvatarFallback>
-        </Avatar>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-muted transition-colors outline-none">
+              <Avatar className="h-9 w-9 border border-border">
+                <AvatarFallback className="bg-gradient-primary text-primary-foreground text-xs font-semibold">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+              {user && (
+                <div className="hidden lg:block text-left">
+                  <p className="text-xs font-semibold leading-tight truncate max-w-[120px]">
+                    {user.full_name || user.email}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground truncate max-w-[120px]">
+                    {user.email}
+                  </p>
+                </div>
+              )}
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-52">
+            <DropdownMenuLabel>
+              <p className="font-medium">{user?.full_name || "My Account"}</p>
+              <p className="text-xs text-muted-foreground font-normal">{user?.email}</p>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive gap-2 cursor-pointer">
+              <LogOut className="h-3.5 w-3.5" />
+              Log out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );

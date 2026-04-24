@@ -1,31 +1,59 @@
-import axios from "axios";
-
 export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
-export const api = axios.create({
-  baseURL: API_URL,
-});
+function getToken() {
+  return localStorage.getItem("keepalive_token");
+}
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("keepalive_token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+// SWR fetcher — used for all GET requests via useSWR
+export const fetcher = async (url: string) => {
+  const res = await fetch(`${API_URL}${url}`, {
+    headers: {
+      "Content-Type": "application/json",
+      ...(getToken() ? { Authorization: `Bearer ${getToken()}` } : {}),
+    },
+  });
+
+  if (res.status === 401) {
+    localStorage.removeItem("keepalive_token");
+    window.location.href = "/auth";
+    return;
   }
-  return config;
-});
 
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem("keepalive_token");
-      if (window.location.pathname !== "/auth" && window.location.pathname !== "/") {
-          window.location.href = "/auth";
-      }
-    }
-    return Promise.reject(error);
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ detail: "Unknown error" }));
+    throw error;
   }
-);
 
-// SWR fetcher
-export const fetcher = (url: string) => api.get(url).then((res) => res.data);
+  return res.json();
+};
+
+// Mutation helper — used for POST, PUT, PATCH, DELETE
+export const apiFetch = async (
+  url: string,
+  method: "POST" | "PUT" | "PATCH" | "DELETE",
+  body?: unknown
+) => {
+  const res = await fetch(`${API_URL}${url}`, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      ...(getToken() ? { Authorization: `Bearer ${getToken()}` } : {}),
+    },
+    ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
+  });
+
+  if (res.status === 401) {
+    localStorage.removeItem("keepalive_token");
+    window.location.href = "/auth";
+    return;
+  }
+
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ detail: "Unknown error" }));
+    throw error;
+  }
+
+  // DELETE may return no content
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+};

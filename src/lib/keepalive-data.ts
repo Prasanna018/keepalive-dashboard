@@ -2,23 +2,24 @@ export type ServiceStatus = "active" | "paused";
 export type Method = "GET" | "POST";
 
 export interface Service {
-  id: string;
+  _id: string;
   url: string;
   method: Method;
   interval: number; // minutes
-  status: ServiceStatus;
-  lastPing: string;
-  headers?: { key: string; value: string }[];
+  is_active: boolean;
+  last_run: string | null;
+  headers?: { key: string; value: string }[] | Record<string, string>;
+  created_at: string;
 }
 
 export interface LogEntry {
-  id: string;
-  serviceId?: string;
-  serviceUrl?: string;
+  _id: string;
+  service_id: string;
+  service_url?: string;
   timestamp: string;
   status: "success" | "fail";
-  statusCode: number;
-  responseTime: number;
+  status_code: number;
+  response_time: number;
   error?: string;
 }
 

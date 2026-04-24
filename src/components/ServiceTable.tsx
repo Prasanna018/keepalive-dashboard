@@ -63,12 +63,12 @@ export const ServiceTable = ({ services, loading, onToggle, onEdit, onDelete, on
           </thead>
           <tbody>
             {services.map((s) => (
-              <tr key={s.id} className="border-b border-border last:border-0 hover:bg-muted/20 transition-colors group">
+              <tr key={s._id} className="border-b border-border last:border-0 hover:bg-muted/20 transition-colors group">
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-3 min-w-0">
                     <div className={cn(
                       "h-9 w-9 rounded-lg flex items-center justify-center font-mono text-xs font-semibold shrink-0",
-                      s.status === "active" ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"
+                      s.is_active ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"
                     )}>
                       {deriveServiceName(s.url).slice(0, 2).toUpperCase()}
                     </div>
@@ -88,20 +88,20 @@ export const ServiceTable = ({ services, loading, onToggle, onEdit, onDelete, on
                   </span>
                 </td>
                 <td className="px-5 py-4">
-                  <StatusBadge status={s.status} />
+                  <StatusBadge is_active={s.is_active} />
                 </td>
-                <td className="px-5 py-4 text-xs text-muted-foreground font-mono">{s.lastPing}</td>
+                <td className="px-5 py-4 text-xs text-muted-foreground font-mono">{s.last_run ? new Date(s.last_run).toLocaleString() : 'Never'}</td>
                 <td className="px-5 py-4">
                   <div className="flex items-center justify-end gap-1">
                     <Switch
-                      checked={s.status === "active"}
-                      onCheckedChange={() => onToggle(s.id)}
+                      checked={s.is_active}
+                      onCheckedChange={() => onToggle(s._id)}
                       aria-label="Toggle service"
                     />
                     <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onEdit(s)}>
                       <Edit2 className="h-3.5 w-3.5" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => onDelete(s.id)}>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => onDelete(s._id)}>
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </div>
@@ -115,20 +115,20 @@ export const ServiceTable = ({ services, loading, onToggle, onEdit, onDelete, on
       {/* Mobile cards */}
       <div className="md:hidden divide-y divide-border">
         {services.map((s) => (
-          <div key={s.id} className="p-4 space-y-3">
+          <div key={s._id} className="p-4 space-y-3">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="font-medium truncate">{deriveServiceName(s.url)}</p>
                 <p className="font-mono text-xs text-muted-foreground truncate">{s.url}</p>
               </div>
-              <StatusBadge status={s.status} />
+              <StatusBadge is_active={s.is_active} />
             </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground font-mono">
-              <span>{s.interval} min · {s.lastPing}</span>
+              <span>{s.interval} min · {s.last_run ? new Date(s.last_run).toLocaleString() : 'Never'}</span>
               <div className="flex items-center gap-1">
-                <Switch checked={s.status === "active"} onCheckedChange={() => onToggle(s.id)} />
+                <Switch checked={s.is_active} onCheckedChange={() => onToggle(s._id)} />
                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onEdit(s)}><Edit2 className="h-3.5 w-3.5" /></Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => onDelete(s.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => onDelete(s._id)}><Trash2 className="h-3.5 w-3.5" /></Button>
               </div>
             </div>
           </div>
@@ -138,8 +138,8 @@ export const ServiceTable = ({ services, loading, onToggle, onEdit, onDelete, on
   );
 };
 
-const StatusBadge = ({ status }: { status: "active" | "paused" }) => {
-  if (status === "active") {
+const StatusBadge = ({ is_active }: { is_active: boolean }) => {
+  if (is_active) {
     return (
       <Badge variant="outline" className="border-success/30 bg-success/10 text-success font-medium gap-1.5">
         <span className="pulse-dot" />

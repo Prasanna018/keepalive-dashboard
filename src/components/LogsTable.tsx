@@ -47,7 +47,7 @@ export const LogsTable = ({ logs, loading }: LogsTableProps) => {
             {logs.map((l) => {
               const ok = l.status === "success";
               return (
-                <tr key={l.id} className="border-b border-border last:border-0 hover:bg-muted/20 transition-colors">
+                <tr key={l._id} className="border-b border-border last:border-0 hover:bg-muted/20 transition-colors">
                   <td className="px-5 py-3">
                     {ok ? (
                       <Badge variant="outline" className="border-success/30 bg-success/10 text-success gap-1.5">
@@ -59,12 +59,12 @@ export const LogsTable = ({ logs, loading }: LogsTableProps) => {
                       </Badge>
                     )}
                   </td>
-                  <td className="px-5 py-3 font-mono text-xs text-muted-foreground whitespace-nowrap">{l.timestamp}</td>
-                  <td className="px-5 py-3 font-mono text-xs truncate max-w-[200px]">{l.serviceUrl ?? "—"}</td>
+                  <td className="px-5 py-3 font-mono text-xs text-muted-foreground whitespace-nowrap">{new Date(l.timestamp).toLocaleString()}</td>
+                  <td className="px-5 py-3 font-mono text-xs truncate max-w-[200px]">{l.service_url ?? "—"}</td>
                   <td className="px-5 py-3 font-mono text-xs">
-                    <span className={ok ? "text-success" : "text-destructive"}>{l.statusCode}</span>
+                    <span className={ok ? "text-success" : "text-destructive"}>{l.status_code}</span>
                   </td>
-                  <td className="px-5 py-3 font-mono text-xs text-muted-foreground">{l.responseTime} ms</td>
+                  <td className="px-5 py-3 font-mono text-xs text-muted-foreground">{l.response_time} ms</td>
                   <td className="px-5 py-3 font-mono text-xs text-muted-foreground">{l.error ?? "—"}</td>
                 </tr>
               );

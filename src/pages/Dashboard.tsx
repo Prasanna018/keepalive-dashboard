@@ -4,39 +4,34 @@ import { ServiceTable } from "@/components/ServiceTable";
 import { ServiceModal } from "@/components/ServiceModal";
 import { Button } from "@/components/ui/button";
 import { Plus, Activity, CheckCircle2, AlertTriangle } from "lucide-react";
-import { Service, initialServices } from "@/lib/keepalive-data";
 import { toast } from "sonner";
+import useSWR from "swr";
+import { apiFetch } from "@/lib/api";
 
 const Dashboard = () => {
-  const [services, setServices] = useState<Service[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: services = [], isLoading: loading, mutate } = useSWR("/services");
   const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing] = useState<Service | null>(null);
+  const [editing, setEditing] = useState<any | null>(null);
 
-  useEffect(() => {
-    const t = setTimeout(() => {
-      setServices(initialServices);
-      setLoading(false);
-    }, 600);
-    return () => clearTimeout(t);
-  }, []);
-
-  const handleSave = (svc: Service) => {
-    setServices((prev) => {
-      const exists = prev.find((s) => s.id === svc.id);
-      if (exists) {
+  const handleSave = async (svc: any) => {
+    try {
+      if (editing) {
+        await apiFetch(`/services/${editing._id}`, "PUT", svc);
         toast.success("Service updated");
-        return prev.map((s) => (s.id === svc.id ? svc : s));
+      } else {
+        await apiFetch("/services", "POST", svc);
+        toast.success("Service added — pinging started");
       }
-      toast.success("Service added — pinging started");
-      return [svc, ...prev];
-    });
+      mutate();
+    } catch (err: any) {
+      toast.error(err?.detail || "Failed to save service");
+    }
   };
 
   const stats = [
     { label: "Total services", value: services.length, icon: Activity, tone: "text-foreground" },
-    { label: "Active", value: services.filter((s) => s.status === "active").length, icon: CheckCircle2, tone: "text-success" },
-    { label: "Paused", value: services.filter((s) => s.status === "paused").length, icon: AlertTriangle, tone: "text-warning" },
+    { label: "Active", value: services.filter((s: any) => s.is_active).length, icon: CheckCircle2, tone: "text-success" },
+    { label: "Paused", value: services.filter((s: any) => !s.is_active).length, icon: AlertTriangle, tone: "text-warning" },
   ];
 
   return (
@@ -70,13 +65,23 @@ const Dashboard = () => {
         services={services}
         loading={loading}
         onAdd={() => { setEditing(null); setModalOpen(true); }}
-        onToggle={(id) => {
-          setServices((prev) => prev.map((s) => s.id === id ? { ...s, status: s.status === "active" ? "paused" : "active" } : s));
+        onToggle={async (id) => {
+          try {
+            await apiFetch(`/services/${id}/toggle`, "PATCH");
+            mutate();
+          } catch (err) {
+            toast.error("Failed to toggle service");
+          }
         }}
-        onEdit={(s) => { setEditing(s); setModalOpen(true); }}
-        onDelete={(id) => {
-          setServices((prev) => prev.filter((s) => s.id !== id));
-          toast.success("Service removed");
+        onEdit={(s: any) => { setEditing(s); setModalOpen(true); }}
+        onDelete={async (id) => {
+          try {
+            await apiFetch(`/services/${id}`, "DELETE");
+            toast.success("Service removed");
+            mutate();
+          } catch (err) {
+            toast.error("Failed to remove service");
+          }
         }}
       />
 

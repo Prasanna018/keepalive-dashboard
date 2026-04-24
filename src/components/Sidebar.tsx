@@ -2,6 +2,8 @@ import { NavLink } from "react-router-dom";
 import { LayoutDashboard, ScrollText, Settings, Webhook } from "lucide-react";
 import { Logo } from "./Logo";
 import { cn } from "@/lib/utils";
+import { useUser } from "@/hooks/useUser";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const items = [
   { to: "/dashboard", label: "Services", icon: LayoutDashboard },
@@ -11,6 +13,12 @@ const items = [
 ];
 
 export const Sidebar = () => {
+  const { user } = useUser();
+
+  const initials = user?.full_name
+    ? user.full_name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+    : user?.email?.slice(0, 2).toUpperCase() ?? "??";
+
   return (
     <aside className="hidden md:flex md:w-60 lg:w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar">
       <div className="px-5 h-16 flex items-center border-b border-sidebar-border">
@@ -45,15 +53,22 @@ export const Sidebar = () => {
           </NavLink>
         ))}
       </nav>
-      <div className="m-3 rounded-xl border border-sidebar-border bg-gradient-to-br from-accent/40 to-transparent p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="pulse-dot" />
-          <p className="text-xs font-semibold text-foreground">All systems pinging</p>
+
+      {/* User info at bottom */}
+      <div className="p-3 border-t border-sidebar-border">
+        <div className="flex items-center gap-3 rounded-lg px-3 py-2">
+          <Avatar className="h-8 w-8 shrink-0 border border-border">
+            <AvatarFallback className="bg-gradient-primary text-primary-foreground text-xs font-semibold">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+          <div className="min-w-0">
+            <p className="text-xs font-semibold truncate">{user?.full_name || user?.email || "Loading..."}</p>
+            <p className="text-[10px] text-muted-foreground truncate">{user?.email || ""}</p>
+          </div>
         </div>
-        <p className="text-xs text-muted-foreground leading-relaxed">
-          3 services monitored. 99.8% uptime over 24h.
-        </p>
       </div>
     </aside>
   );
 };
+

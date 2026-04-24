@@ -6,12 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/Logo";
 import { ArrowRight, Github, Mail, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { api } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 
 const Auth = () => {
   const [tab, setTab] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -20,12 +21,15 @@ const Auth = () => {
     setLoading(true);
     try {
       const endpoint = tab === "login" ? "/auth/login" : "/auth/register";
-      const res = await api.post(endpoint, { email, password });
-      localStorage.setItem("keepalive_token", res.data.access_token);
+      const payload = tab === "register"
+        ? { email, password, full_name: fullName }
+        : { email, password };
+      const data = await apiFetch(endpoint, "POST", payload);
+      localStorage.setItem("keepalive_token", data.access_token);
       toast.success(tab === "login" ? "Welcome back!" : "Account created — let's go.");
       navigate("/dashboard");
     } catch (err: any) {
-      toast.error(err.response?.data?.detail || "Authentication failed");
+      toast.error(err?.detail || "Authentication failed");
     } finally {
       setLoading(false);
     }
@@ -64,6 +68,12 @@ const Auth = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {tab === "register" && (
+              <div className="space-y-2">
+                <Label htmlFor="fullName" className="text-xs uppercase tracking-wider text-muted-foreground">Full Name</Label>
+                <Input id="fullName" type="text" placeholder="John Doe" value={fullName} onChange={(e) => setFullName(e.target.value)} required className="h-11" />
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="email" className="text-xs uppercase tracking-wider text-muted-foreground">Email</Label>
               <Input id="email" type="email" placeholder="dev@yourcompany.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-11" />
