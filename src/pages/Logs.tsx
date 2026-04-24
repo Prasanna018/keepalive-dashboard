@@ -7,7 +7,7 @@ import { LogEntry } from "@/lib/keepalive-data";
 import useSWR from "swr";
 
 const Logs = () => {
-  const { data: logs = [], isLoading: loading, mutate, isValidating } = useSWR("/logs", { refreshInterval: 5000 });
+  const { data: logs = [], isLoading: loading, mutate, isValidating } = useSWR("/logs");
   const [filter, setFilter] = useState<"all" | "success" | "fail">("all");
 
   const filtered = filter === "all" ? logs : logs.filter((l) => l.status === filter);
