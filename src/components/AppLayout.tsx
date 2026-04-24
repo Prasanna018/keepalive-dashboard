@@ -9,7 +9,16 @@ interface AppLayoutProps {
   actions?: ReactNode;
 }
 
+import { BackendSuspended } from "./BackendSuspended";
+import { useUser } from "@/hooks/useUser";
+
 export const AppLayout = ({ title, subtitle, children, actions }: AppLayoutProps) => {
+  const { isError, error } = useUser();
+
+  if (isError && error?.detail === "BACKEND_SUSPENDED") {
+    return <BackendSuspended />;
+  }
+
   return (
     <div className="min-h-screen flex w-full bg-background bg-mesh">
       <Sidebar />
