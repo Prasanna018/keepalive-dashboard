@@ -17,14 +17,14 @@ interface ServiceModalProps {
 export const ServiceModal = ({ open, onOpenChange, initial, onSave }: ServiceModalProps) => {
   const [url, setUrl] = useState("");
   const [method, setMethod] = useState<Method>("GET");
-  const [interval, setIntervalMin] = useState("5");
+  const [interval, setIntervalMin] = useState("15");
   const [headers, setHeaders] = useState<{ key: string; value: string }[]>([]);
 
   useEffect(() => {
     if (open) {
       setUrl(initial?.url ?? "");
       setMethod(initial?.method ?? "GET");
-      setIntervalMin(String(initial?.interval ?? 5));
+      setIntervalMin(String(initial?.interval ?? 15));
       
       let initHeaders = [];
       if (initial?.headers) {
@@ -104,10 +104,10 @@ export const ServiceModal = ({ open, onOpenChange, initial, onSave }: ServiceMod
               <Select value={interval} onValueChange={setIntervalMin}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1">Every 1 minute</SelectItem>
-                  <SelectItem value="5">Every 5 minutes</SelectItem>
-                  <SelectItem value="10">Every 10 minutes</SelectItem>
                   <SelectItem value="15">Every 15 minutes</SelectItem>
+                  <SelectItem value="30">Every 30 minutes</SelectItem>
+                  <SelectItem value="45">Every 45 minutes</SelectItem>
+                  <SelectItem value="60">Every 60 minutes</SelectItem>
                 </SelectContent>
               </Select>
             </div>
