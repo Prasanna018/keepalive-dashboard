@@ -38,25 +38,36 @@ const Dashboard = () => {
     <AppLayout
       title="Services"
       subtitle="Keep your backends warm and responsive."
-      actions={
+        actions={
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 flex-1 max-w-2xl">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 flex-1 max-w-2xl">
             {stats.map((s) => (
-              <div key={s.label} className="rounded-xl border border-border bg-card p-4 shadow-elegant">
+              <div key={s.label} className="rounded-xl border border-border bg-card p-3 sm:p-4 shadow-elegant hover:shadow-glow transition-all duration-300">
                 <div className="flex items-center justify-between mb-1.5">
-                  <p className="text-xs text-muted-foreground">{s.label}</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider font-medium">{s.label}</p>
                   <s.icon className={`h-3.5 w-3.5 ${s.tone}`} />
                 </div>
-                <p className="text-2xl font-semibold tracking-tight">{s.value}</p>
+                <p className="text-xl sm:text-2xl font-bold tracking-tight">{s.value}</p>
               </div>
             ))}
           </div>
+          
+          {/* Desktop Add Button */}
           <Button
             size="lg"
-            className="gap-2 bg-gradient-primary hover:opacity-90 shadow-glow"
+            className="hidden sm:flex gap-2 bg-gradient-primary hover:opacity-90 shadow-glow"
             onClick={() => { setEditing(null); setModalOpen(true); }}
           >
             <Plus className="h-4 w-4" /> Add Service
+          </Button>
+
+          {/* Mobile FAB */}
+          <Button
+            size="icon"
+            className="sm:hidden fixed bottom-20 right-6 h-14 w-14 rounded-full bg-gradient-primary shadow-glow z-40 animate-in fade-in zoom-in duration-300"
+            onClick={() => { setEditing(null); setModalOpen(true); }}
+          >
+            <Plus className="h-6 w-6" />
           </Button>
         </>
       }

@@ -113,22 +113,68 @@ export const ServiceTable = ({ services, loading, onToggle, onEdit, onDelete, on
       </div>
 
       {/* Mobile cards */}
-      <div className="md:hidden divide-y divide-border">
+      <div className="md:hidden space-y-3 p-1">
         {services.map((s) => (
-          <div key={s._id} className="p-4 space-y-3">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <p className="font-medium truncate">{deriveServiceName(s.url)}</p>
-                <p className="font-mono text-xs text-muted-foreground truncate">{s.url}</p>
+          <div 
+            key={s._id} 
+            className={cn(
+              "relative overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-elegant transition-all duration-300",
+              s.is_active ? "border-l-4 border-l-primary" : "border-l-4 border-l-muted-foreground/30"
+            )}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className={cn(
+                  "h-10 w-10 rounded-xl flex items-center justify-center font-mono text-sm font-bold shrink-0 shadow-sm",
+                  s.is_active ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
+                )}>
+                  {deriveServiceName(s.url).slice(0, 2).toUpperCase()}
+                </div>
+                <div className="min-w-0">
+                  <h4 className="font-bold text-foreground truncate leading-tight">{deriveServiceName(s.url)}</h4>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <p className="font-mono text-[10px] text-muted-foreground truncate max-w-[150px]">{s.url}</p>
+                    <ExternalLink className="h-2.5 w-2.5 text-muted-foreground/50" />
+                  </div>
+                </div>
               </div>
               <StatusBadge is_active={s.is_active} />
             </div>
-            <div className="flex items-center justify-between text-xs text-muted-foreground font-mono">
-              <span>{s.interval} min · {s.last_run ? new Date(s.last_run).toLocaleString() : 'Never'}</span>
+
+            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border/50">
+              <div className="space-y-1">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Interval</p>
+                <div className="flex items-center gap-1.5 text-xs font-mono">
+                  <Clock className="h-3 w-3 text-primary" />
+                  {s.interval} min
+                </div>
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Last Run</p>
+                <p className="text-xs font-mono text-muted-foreground truncate">
+                  {s.last_run ? new Date(s.last_run).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Never'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between mt-5 pt-3 border-t border-border/50">
+              <div className="flex items-center gap-2">
+                <Switch 
+                  checked={s.is_active} 
+                  onCheckedChange={() => onToggle(s._id)}
+                  className="scale-90"
+                />
+                <span className="text-[10px] font-medium uppercase tracking-tight text-muted-foreground">
+                  {s.is_active ? "Running" : "Paused"}
+                </span>
+              </div>
               <div className="flex items-center gap-1">
-                <Switch checked={s.is_active} onCheckedChange={() => onToggle(s._id)} />
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onEdit(s)}><Edit2 className="h-3.5 w-3.5" /></Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => onDelete(s._id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                <Button variant="secondary" size="sm" className="h-8 px-3 gap-1.5 rounded-lg text-xs" onClick={() => onEdit(s)}>
+                  <Edit2 className="h-3 w-3" /> Edit
+                </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10" onClick={() => onDelete(s._id)}>
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
               </div>
             </div>
           </div>
